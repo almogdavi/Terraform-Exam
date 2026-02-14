@@ -1,0 +1,177 @@
+Section 1
+Terraform Fundamentals (5 questions)
+1.
+
+Terraform is an Infrastructure as Code tool that allows us to create infrastructure, for example on AWS, by writing code instead of creating it manually through the AWS console.
+This approach is more accessible, saves time, is more efficient, and keeps everything we created and used documented in code.
+
+2.
+
+With Terraform, we tell it what we want the final state to be, and Terraform takes care of how to achieve it, without us needing to manually build the process or do repetitive work.
+
+3.
+
+Providers allow Terraform to work with different platforms and applications.
+For example, if we want to work with AWS using Terraform, we use the AWS provider.
+The provider is responsible for communicating with the platform and managing the resources.
+
+4.
+
+Terraform automatically creates a dependency graph, which allows it to understand what needs to be created first and what comes after.
+This dependency order can be visualized using the terraform graph command.
+
+5.
+
+Working with Terraform includes using providers to interact with platforms and variables to control and customize different configuration values.
+
+State Management & Backend Configuration (3 questions)
+1.
+
+terraform refresh updates the TFSTATE file according to what currently exists in the cloud.
+terraform plan shows what changes will be made by comparing the code with the current TFSTATE.
+terraform apply applies the changes that were shown in the plan.
+
+2.
+
+A local backend is suitable for working alone because the state file is stored locally on the machine.
+A remote backend is suitable for collaborative work because everyone works with the same state file stored in the cloud, which helps prevent conflicts.
+
+3.
+
+Old versions of the code are stored so that if something breaks, it can be rolled back.
+Not everyone is given permissions to run terraform apply in order to prevent mistakes.
+
+Terraform Modules & Reusability (4 questions)
+1.
+
+There is no need to write the same code repeatedly.
+For example, if we already created an IAM configuration or an entire AWS setup, all the related Terraform files can be stored together in one directory.
+When we want to use it again, we import the module instead of rewriting the code.
+This works like a template.
+
+2.
+
+To use a module, we call it in the main project file:
+
+module "example" {
+  source = "./modules/my_module"
+}
+
+
+If the module contains a variable called color, we define it in the main file like this:
+
+module "example" {
+  source = "./modules/my_module"
+  color  = "red"
+}
+
+3.
+
+Both count and for_each duplicate resources.
+
+count duplicates resources based on a number and relies on index order, which should not be changed because it may cause issues.
+
+for_each duplicates resources based on identity, where each resource has a unique key.
+This allows adding, removing, or reordering resources without causing problems, unlike count.
+
+If the setup is static, count can be used.
+If the setup is dynamic, for_each is preferred.
+
+4.
+
+Using a Git module works the same way as a local module, but the source points to a Git repository.
+Example:
+
+module "module_name" {
+  source = "git::git_repository_url"
+}
+
+Terraform with AWS (4 questions)
+1.
+
+Example:
+
+provider "aws" {
+  region = "us-east-1"
+}
+
+resource "aws_instance" "server" {
+  ami           = "ami-0c02fb55956c7d316"
+  instance_type = "t2.micro"
+}
+
+
+Then run:
+
+terraform init
+terraform plan
+terraform apply
+
+2.
+
+When creating a VPC, you must choose an IP range:
+
+resource "aws_vpc" "main" {
+  cidr_block = "10.0.0.0/16"
+}
+
+3.
+
+Policy – defines what actions are allowed
+
+Role – defines who performs the actions
+
+Attachment – connects the role to the policy
+
+Instance Profile – allows an EC2 instance to assume the role
+
+(code example remains exactly as provided)
+
+4.
+
+To provision and attach an Application Load Balancer (ALB), the following components are required:
+
+VPC and subnets (at least two public subnets)
+
+Security Groups
+
+ALB: open ports 80/443 to the internet
+
+EC2: open port 80 only from the ALB security group
+
+Target Group – where the ALB sends traffic
+
+Load Balancer (ALB)
+
+Listener – listens on port 80/443 and forwards traffic
+
+Attach targets using aws_lb_target_group_attachment (or an ASG)
+
+(code example remains exactly as provided)
+
+Debugging & Error Handling (4 questions)
+1.
+
+terraform validate checks whether the Terraform configuration is syntactically valid without accessing remote or external services.
+
+2.
+
+To debug Terraform errors effectively:
+
+Run terraform validate
+
+Run terraform plan
+
+Check variables and inputs
+
+Check the state file
+
+Review Terraform error messages carefully
+
+3.
+
+ignore_changes in Terraform tells it to ignore changes to specific resource attributes, even if those changes were made outside of Terraform.
+
+4.
+
+To import existing infrastructure into Terraform, define the resource in code and run terraform import with the resource ID to bring it under Terraform state management.

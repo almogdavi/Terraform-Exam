@@ -1,0 +1,16 @@
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+
+# AWS / binaries
+awscliv2.zip
+**/dist/
+
+# Editor / OS
+.DS_Store
+.vscode/
